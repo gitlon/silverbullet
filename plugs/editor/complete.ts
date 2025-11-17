@@ -98,7 +98,7 @@ export async function pageComplete(completeEvent: CompleteEvent) {
         // A [[wikilink]]
         if (pageMeta.displayName) {
           const decoratedName = namePrefix + pageMeta.displayName;
-          let boost = new Date(pageMeta.lastModified).getTime();
+          let boost = new Date(pageMeta.lastModified || 0).getTime();
           if (pageMeta._isAspiring) {
             boost = -Infinity;
           }
@@ -120,7 +120,7 @@ export async function pageComplete(completeEvent: CompleteEvent) {
             completions.push({
               label: alias,
               displayLabel: decoratedName,
-              boost: new Date(pageMeta.lastModified).getTime(),
+              boost: new Date(pageMeta.lastModified || 0).getTime(),
               apply: pageMeta.tag === "template"
                 ? pageMeta.name
                 : `${pageMeta.name}|${alias}`,
@@ -134,7 +134,7 @@ export async function pageComplete(completeEvent: CompleteEvent) {
         completions.push({
           label: pageMeta.name,
           displayLabel: decoratedName,
-          boost: new Date(pageMeta.lastModified).getTime(),
+          boost: new Date(pageMeta.lastModified || 0).getTime(),
           detail: pageMeta.tags?.includes("non-existing")
             ? "Linked but not created"
             : undefined,
@@ -144,7 +144,7 @@ export async function pageComplete(completeEvent: CompleteEvent) {
       } else {
         // A markdown link []()
         let labelText = pageMeta.name;
-        let boost = new Date(pageMeta.lastModified).getTime();
+        let boost = new Date(pageMeta.lastModified || 0).getTime();
         // Relative path if in the same folder or a subfolder
         if (folder.length > 0 && labelText.startsWith(folder)) {
           labelText = labelText.slice(folder.length + 1);

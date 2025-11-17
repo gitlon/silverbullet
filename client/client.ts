@@ -39,6 +39,7 @@ import type { StyleObject } from "../plugs/index/style.ts";
 import { jitter, throttle } from "@silverbulletmd/silverbullet/lib/async";
 import { EventedSpacePrimitives } from "./spaces/evented_space_primitives.ts";
 import { HttpSpacePrimitives } from "./spaces/http_space_primitives.ts";
+import { NormalizingSpacePrimitives } from "./spaces/normalizing_space_primitives.ts";
 import {
   encodePageURI,
   encodeRef,
@@ -313,7 +314,9 @@ export class Client {
 
     this.eventedSpacePrimitives = new EventedSpacePrimitives(
       new CheckedSpacePrimitives(
-        this.httpSpacePrimitives,
+        new NormalizingSpacePrimitives(
+          this.httpSpacePrimitives,
+        ),
         this.bootConfig.readOnly,
       ),
       this.eventHook,

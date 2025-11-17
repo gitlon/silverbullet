@@ -235,7 +235,7 @@ async function renamePage(oldName: string, newName: string) {
   }
   // Handling the edge case of a changing page name just in casing on a case insensitive FS
   const oldPageMeta = await space.getPageMeta(oldName);
-  if (oldPageMeta.lastModified !== newPageMeta.lastModified) {
+  if ((oldPageMeta.lastModified || 0) !== (newPageMeta.lastModified || 0)) {
     // If they're the same, let's assume it's the same file (case insensitive FS) and not delete, otherwise...
     await space.deletePage(oldName);
   }
@@ -268,7 +268,7 @@ async function renameDocument(
 
   // Handling the edge case of a changing file name just in casing on a case insensitive FS
   const oldFileMeta = await space.getDocumentMeta(oldPath);
-  if (oldFileMeta.lastModified !== newFileMeta.lastModified) {
+  if ((oldFileMeta.lastModified || 0) !== (newFileMeta.lastModified || 0)) {
     // If they're the same, let's assume it's the same file (case insensitive FS) and not delete, otherwise...
     await space.deleteDocument(oldPath);
   }

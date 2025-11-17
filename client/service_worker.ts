@@ -15,6 +15,7 @@ import { IndexedDBKvPrimitives } from "./data/indexeddb_kv_primitives.ts";
 import { fsEndpoint } from "./spaces/constants.ts";
 import { DataStoreSpacePrimitives } from "./spaces/datastore_space_primitives.ts";
 import { HttpSpacePrimitives } from "./spaces/http_space_primitives.ts";
+import { NormalizingSpacePrimitives } from "./spaces/normalizing_space_primitives.ts";
 import { throttleImmediately } from "@silverbulletmd/silverbullet/lib/async";
 import { wrongSpacePathError } from "@silverbulletmd/silverbullet/constants";
 import type { KvPrimitives } from "./data/kv_primitives.ts";
@@ -225,28 +226,32 @@ self.addEventListener("message", async (event: any) => {
         }
 
         // And use that to power the IndexedDB backed local storage
-        const local = new DataStoreSpacePrimitives(kv);
+        const local = new NormalizingSpacePrimitives(
+          new DataStoreSpacePrimitives(kv),
+        );
 
         // Which we'll sync with the remote server
-        const remote = new HttpSpacePrimitives(
-          basePathName + fsEndpoint,
-          spaceFolderPath,
-          (message, actionOrRedirectHeader) => {
-            // And auth error occured
-            console.error(
-              "[service proxy error]",
-              message,
-              actionOrRedirectHeader,
-            );
-            if (message === wrongSpacePathError.message) {
-              proxyRouter.reset();
-            }
-            broadcastMessage({
-              type: "auth-error",
-              message,
-              actionOrRedirectHeader,
-            });
-          },
+        const remote = new NormalizingSpacePrimitives(
+          new HttpSpacePrimitives(
+            basePathName + fsEndpoint,
+            spaceFolderPath,
+            (message, actionOrRedirectHeader) => {
+              // And auth error occured
+              console.error(
+                "[service proxy error]",
+                message,
+                actionOrRedirectHeader,
+              );
+              if (message === wrongSpacePathError.message) {
+                proxyRouter.reset();
+              }
+              broadcastMessage({
+                type: "auth-error",
+                message,
+                actionOrRedirectHeader,
+              });
+            },
+          ),
         );
 
         // Now let's setup sync

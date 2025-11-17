@@ -49,8 +49,9 @@ export function AnythingPicker({
       const isViewable = extensions.has(documentMeta.extension);
 
       let orderId = isViewable
-        ? -new Date(documentMeta.lastModified).getTime()
-        : (Number.MAX_VALUE - new Date(documentMeta.lastModified).getTime());
+        ? -new Date(documentMeta.lastModified || 0).getTime()
+        : (Number.MAX_VALUE -
+          new Date(documentMeta.lastModified || 0).getTime());
 
       if (currentPath === documentMeta.name) {
         orderId = Infinity;
@@ -86,7 +87,7 @@ export function AnythingPicker({
         pageMeta.name = pageMeta.ref;
       }
       // Order by last modified date in descending order
-      let orderId = -new Date(pageMeta.lastModified).getTime();
+      let orderId = -new Date(pageMeta.lastModified || 0).getTime();
       // Unless it was opened in this session
       if (pageMeta.lastOpened) {
         orderId = -pageMeta.lastOpened;

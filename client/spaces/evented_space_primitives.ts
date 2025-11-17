@@ -98,7 +98,7 @@ export class EventedSpacePrimitives implements SpacePrimitives {
       const deletedFiles = new Set<string>(Object.keys(this.spaceSnapshot));
       for (const meta of newFileList) {
         const oldHash = this.spaceSnapshot[meta.name];
-        const newHash = meta.lastModified;
+        const newHash = meta.lastModified || 0;
         // Update in snapshot
         this.updateInSnapshot(meta.name, newHash);
 
@@ -162,7 +162,7 @@ export class EventedSpacePrimitives implements SpacePrimitives {
       // Fetch file
       const data = await this.wrapped.readFile(path);
       if (!wasFetching) {
-        await this.triggerEventsAndCache(path, data.meta.lastModified);
+        await this.triggerEventsAndCache(path, data.meta.lastModified || 0);
       }
       return data;
     } finally {

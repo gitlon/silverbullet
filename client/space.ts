@@ -114,7 +114,7 @@ export class Space {
     for (const file of files) {
       if (fileMap.has(file.name)) {
         const existing = fileMap.get(file.name)!;
-        if (existing.lastModified < file.lastModified) {
+        if ((existing.lastModified || 0) < (file.lastModified || 0)) {
           fileMap.set(file.name, file);
         }
       } else {
@@ -199,8 +199,8 @@ export function fileMetaToPageMeta(fileMeta: FileMeta): PageMeta {
       tag: "page",
       tags: [],
       name,
-      created: localDateString(new Date(fileMeta.created)),
-      lastModified: localDateString(new Date(fileMeta.lastModified)),
+      created: localDateString(new Date(fileMeta.created || 0)),
+      lastModified: localDateString(new Date(fileMeta.lastModified || 0)),
     } as PageMeta;
   } catch (e) {
     console.error("Failed to convert fileMeta to pageMeta", fileMeta, e);
@@ -216,8 +216,8 @@ export function fileMetaToDocumentMeta(
       ...fileMeta,
       ref: fileMeta.name,
       tag: "document",
-      created: localDateString(new Date(fileMeta.created)),
-      lastModified: localDateString(new Date(fileMeta.lastModified)),
+      created: localDateString(new Date(fileMeta.created || 0)),
+      lastModified: localDateString(new Date(fileMeta.lastModified || 0)),
       // Name is always equal to the path for documents
       extension: getPathExtension(fileMeta.name as Path),
     } as DocumentMeta;

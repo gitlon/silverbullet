@@ -112,9 +112,20 @@ export class DataStoreSpacePrimitives implements SpacePrimitives {
   }
 
   cleanFileMeta(fileMeta: FileMeta): FileMeta {
-    if (!fileMeta.created) {
-      fileMeta.created = fileMeta.lastModified;
+    // Handle undefined, null, NaN, or negative values for lastModified
+    if (
+      !fileMeta.lastModified || fileMeta.lastModified < 0 ||
+      isNaN(fileMeta.lastModified)
+    ) {
+      fileMeta.lastModified = 0;
     }
+
+    // Handle undefined, null, NaN, or negative values for created
+    if (!fileMeta.created || fileMeta.created < 0 || isNaN(fileMeta.created)) {
+      // If created is missing but lastModified is valid, use lastModified
+      fileMeta.created = fileMeta.lastModified || 0;
+    }
+
     return fileMeta;
   }
 }
